@@ -140,7 +140,7 @@ jobs:
           }
 
           DATABASE_LIST=$(npx wrangler d1 list --json 2>&1 || true)
-          EXISTING_DB=$(printf '%s' "$DATABASE_LIST" | extract_first_json_array | jq -r 'first(.[] | select(.name=="cloudpaste-db") | .uuid) // empty')
+          EXISTING_DB=$(printf '%s' "$DATABASE_LIST" | extract_first_json_array | jq -r '[.[] | select(.name=="cloudpaste-db") | .uuid] | first // empty')
 
           if [ -n "$EXISTING_DB" ]; then
             echo "✅ 找到现有 D1 数据库: $EXISTING_DB"
@@ -157,7 +157,7 @@ jobs:
               echo "✅ 数据库创建成功: $DATABASE_ID"
             else
               LIST_OUTPUT=$(npx wrangler d1 list --json 2>&1 || true)
-              DATABASE_ID=$(printf '%s' "$LIST_OUTPUT" | extract_first_json_array | jq -r 'first(.[] | select(.name=="cloudpaste-db") | .uuid) // empty')
+              DATABASE_ID=$(printf '%s' "$LIST_OUTPUT" | extract_first_json_array | jq -r '[.[] | select(.name=="cloudpaste-db") | .uuid] | first // empty')
 
               if [ -z "$DATABASE_ID" ]; then
                 echo "❌ 无法创建或找到 D1 数据库"
