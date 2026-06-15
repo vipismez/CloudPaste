@@ -136,7 +136,7 @@ jobs:
         run: |
           echo "检查并创建 D1 数据库..."
           extract_first_json_array() {
-            python3 -c $'import json, sys\ntext = sys.stdin.read()\nstart = text.find("[")\nif start == -1:\n    print("[]")\n    raise SystemExit(0)\ntry:\n    value, _ = json.JSONDecoder().raw_decode(text[start:])\nexcept json.JSONDecodeError:\n    print("[]")\n    raise SystemExit(0)\nprint(json.dumps(value))'
+            python3 -c $'import json, sys\ntext = sys.stdin.read()\nstart = text.find("[")\nif start == -1:\n    print("⚠️ Wrangler 未返回可解析的 D1 JSON 输出", file=sys.stderr)\n    print("[]")\n    raise SystemExit(0)\ntry:\n    value, _ = json.JSONDecoder().raw_decode(text[start:])\nexcept json.JSONDecodeError as exc:\n    print(f"⚠️ 无法解析 Wrangler D1 JSON 输出: {exc}", file=sys.stderr)\n    print("[]")\n    raise SystemExit(0)\nprint(json.dumps(value))'
           }
 
           DATABASE_LIST=$(npx wrangler d1 list --json 2>&1 || true)
